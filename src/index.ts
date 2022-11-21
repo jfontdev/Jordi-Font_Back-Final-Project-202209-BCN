@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 import express from "express";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 dotenv.config();
 
 const port = process.env.PORT;
