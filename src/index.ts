@@ -1,20 +1,10 @@
-import * as dotenv from "dotenv";
-import express from "express";
+import environment from "./loadEnvironment.js";
+import databaseConnection from "./database/databaseConnection.js";
+import serverStart from "./server/serverStart.js";
 
-dotenv.config();
+const { port, mongoUrl } = environment;
 
-const port = process.env.PORT;
-
-const app = express();
-
-app.use(express.json());
-
-const { log } = console;
-
-app.use((req, res) => {
-  res.status(200).json({ message: "Hola mundo" });
-});
-
-app.listen(port, () => {
-  log(`Server starting: http://localhost:${port}`);
-});
+(async () => {
+  await databaseConnection(mongoUrl);
+  await serverStart(+port);
+})();
