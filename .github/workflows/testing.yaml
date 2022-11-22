@@ -16,3 +16,7 @@ jobs:
 
       - name: Testing
         run: npm test
+        env:
+          DEBUG: ${{ secrets.DEBUG }}
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}

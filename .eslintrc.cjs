@@ -18,6 +18,7 @@ module.exports = {
         "@typescript-eslint/no-empty-function": "off",
         "no-implicit-coercion": "off",
         "@typescript-eslint/naming-convention": "off",
+        "new-cap": "off",
       },
     },
   ],
