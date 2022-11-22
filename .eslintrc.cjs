@@ -17,6 +17,7 @@ module.exports = {
         "@typescript-eslint/indent": "off",
         "@typescript-eslint/no-empty-function": "off",
         "no-implicit-coercion": "off",
+        "@typescript-eslint/naming-convention": "off",
       },
     },
   ],
