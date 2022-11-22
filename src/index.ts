@@ -4,7 +4,5 @@ import serverStart from "./server/serverStart.js";
 
 const { port, mongoUrl } = environment;
 
-(async () => {
-  await databaseConnection(mongoUrl);
-  await serverStart(+port);
-})();
+await databaseConnection(mongoUrl);
+await serverStart(+port);
