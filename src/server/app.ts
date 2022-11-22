@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
-import { generalError, unknownEndpoint } from "./middlewares/errors";
-import usersRouter from "./routes/usersRouter";
+import { generalError, unknownEndpoint } from "./middlewares/errors.js";
+import usersRouter from "./routes/usersRouter.js";
 
 const app = express();
 
