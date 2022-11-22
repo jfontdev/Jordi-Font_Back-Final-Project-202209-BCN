@@ -52,5 +52,13 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.2",
     "morgan": "^1.10.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "!src/index.ts",
+      "!src/loadEnvironment.ts",
+      "!src/database/models/*.ts",
+      "src/**/*.test.ts"
+    ]
   }
 }
