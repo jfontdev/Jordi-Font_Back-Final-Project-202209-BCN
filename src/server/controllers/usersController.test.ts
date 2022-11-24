@@ -87,4 +87,16 @@ describe("Given a User controller", () => {
       expect(res.json).toBeCalledWith(expectedBody);
     });
   });
+
+  describe("When the login controller fails and throws an error", () => {
+    test("Then it should call the next function with the error", async () => {
+      const expectedError = new Error("");
+
+      User.findOne = jest.fn().mockRejectedValue(expectedError);
+
+      await usersLogin(req as Request, res as Response, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
 });
