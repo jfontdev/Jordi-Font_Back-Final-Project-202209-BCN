@@ -13,30 +13,38 @@ export const usersLogin = async (
 ) => {
   const { username, password } = req.body as Credentials;
 
-  const user = await User.findOne({ username });
+  try {
+    const user = await User.findOne({ username });
 
-  if (!user) {
-    const error = new CustomError("User not found", 401, "Invalid credentials");
+    if (!user) {
+      const error = new CustomError(
+        "User not found",
+        401,
+        "Invalid credentials"
+      );
+      next(error);
+      return;
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      const error = new CustomError(
+        "Invalid password",
+        401,
+        "Invalid credentials"
+      );
+      next(error);
+      return;
+    }
+
+    const tokenPayload: UserTokenPayload = {
+      id: user._id.toString(),
+      username,
+    };
+
+    const token = jwt.sign(tokenPayload, environment.secretKey);
+
+    res.status(200).json({ token });
+  } catch (error: unknown) {
     next(error);
-    return;
   }
-
-  if (!(await bcrypt.compare(password, user.password))) {
-    const error = new CustomError(
-      "Invalid password",
-      401,
-      "Invalid credentials"
-    );
-    next(error);
-    return;
-  }
-
-  const tokenPayload: UserTokenPayload = {
-    id: user._id.toString(),
-    username,
-  };
-
-  const token = jwt.sign(tokenPayload, environment.secretKey);
-
-  res.status(200).json({ token });
 };
