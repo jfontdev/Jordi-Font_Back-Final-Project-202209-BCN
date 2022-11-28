@@ -4,7 +4,7 @@ import CustomError from "../../CustomError/CustomError";
 import bcrypt from "bcryptjs";
 import User from "../../database/models/User";
 import type { Credentials } from "../types";
-import { usersLogin } from "./usersController";
+import { usersLogin, usersRegister } from "./usersController";
 import mongoose from "mongoose";
 
 beforeEach(() => {
@@ -97,6 +97,70 @@ describe("Given a User controller", () => {
       await usersLogin(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+});
+
+describe("Given a usersRegister controller", () => {
+  const newUser = {
+    username: "user2",
+    password: "123456",
+    email: "user2@gmail.com",
+  };
+
+  req.body = newUser;
+
+  describe("When it receives a new user that doesn't exist", () => {
+    test("Then it should register that user and return a status code 201", async () => {
+      const expectedStatus = 201;
+
+      const userId = new mongoose.Types.ObjectId();
+
+      const expectedBody = {
+        user: {
+          username: newUser.username,
+          email: newUser.email,
+          id: userId,
+        },
+      };
+
+      const hashedPassword = await bcrypt.hash(newUser.password, 10);
+
+      User.create = jest.fn().mockResolvedValue({
+        username: newUser.username,
+        password: hashedPassword,
+        email: newUser.email,
+        _id: userId,
+      });
+
+      await usersRegister(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith(expectedBody);
+    });
+  });
+
+  describe("When it receives a user that already exists", () => {
+    test("Then it shoudl call the next function, return a status code 409 and the error message 'User already exists'", async () => {
+      const duplicatedRegister = new CustomError(
+        "duplicate key",
+        409,
+        "User already exists"
+      );
+
+      User.create = jest.fn().mockRejectedValueOnce(duplicatedRegister);
+
+      await usersRegister(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith(duplicatedRegister);
     });
   });
 });

@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import CustomError from "../../CustomError/CustomError.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import type { Credentials, UserTokenPayload } from "../types";
+import type { Credentials, RegisterData, UserTokenPayload } from "../types";
 import User from "../../database/models/User.js";
 import environment from "../../loadEnvironment.js";
 
@@ -46,5 +46,38 @@ export const usersLogin = async (
     res.status(200).json({ token });
   } catch (error: unknown) {
     next(error);
+  }
+};
+
+export const usersRegister = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { username, password, email } = req.body as RegisterData;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+      email,
+    });
+
+    res.status(201).json({
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      },
+    });
+  } catch (error: unknown) {
+    const duplicatedRegister = new CustomError(
+      (error as Error).message,
+      409,
+      "User already exists"
+    );
+    next(duplicatedRegister);
   }
 };
