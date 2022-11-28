@@ -108,3 +108,41 @@ describe("Given a POST users/login endpoint", () => {
     });
   });
 });
+
+describe("Given a POST /users/register endpoint", () => {
+  const newUser = {
+    username: "usertest",
+    password: "654321",
+    email: "usertest@gmail.com",
+  };
+
+  describe("When it receives a request with the name 'usertest', password '654321' and email 'usertest@gmail.com'", () => {
+    test("Then it should respond with a 201 status and the new user 'usertest'", async () => {
+      const expectedStatus = 201;
+
+      const response = await request(app)
+        .post("/users/register")
+        .send(newUser)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("user");
+    });
+  });
+
+  describe("When it receives a user that exists with the name 'usertest', password '654321' and email 'usertest@gmail.com", () => {
+    test("Then it should respond with a 409 status with error message 'User already exists'", async () => {
+      await User.create(newUser);
+
+      const expectedStatus = 409;
+
+      const expectedErrorMessage = "User already exists";
+
+      const response = await request(app)
+        .post("/users/register")
+        .send(newUser)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error", expectedErrorMessage);
+    });
+  });
+});
