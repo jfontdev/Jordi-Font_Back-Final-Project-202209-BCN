@@ -18,5 +18,6 @@ jobs:
         run: npm test
         env:
           DEBUG: ${{ secrets.DEBUG }}
+          CORS_ALLOWED_DOMAINS: ${{secrets.CORS_ALLOWED_DOMAINS}}
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}

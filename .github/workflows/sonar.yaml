@@ -21,6 +21,7 @@ jobs:
           DEBUG: ${{ secrets.DEBUG }}
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          CORS_ALLOWED_DOMAINS: ${{secrets.CORS_ALLOWED_DOMAINS}}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
