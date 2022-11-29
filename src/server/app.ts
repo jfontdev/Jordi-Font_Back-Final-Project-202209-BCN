@@ -1,11 +1,24 @@
+import environment from "../loadEnvironment.js";
+import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import { generalError, unknownEndpoint } from "./middlewares/errors.js";
 import usersRouter from "./routes/usersRouter.js";
+import stringToArray from "../utils/stringToArray/stringToArray.js";
+import { generalError, unknownEndpoint } from "./middlewares/errors.js";
+
+const { corsAllowedDomains } = environment;
 
 const app = express();
 
 app.disable("x-powered-by");
+
+const allowedOrigins = stringToArray(corsAllowedDomains, ",");
+
+const options: cors.CorsOptions = {
+  origin: allowedOrigins,
+};
+
+app.use(cors(options));
 
 app.use(express.json());
 
