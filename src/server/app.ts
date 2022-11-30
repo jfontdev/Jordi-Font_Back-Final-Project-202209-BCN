@@ -5,6 +5,7 @@ import morgan from "morgan";
 import usersRouter from "./routes/usersRouter.js";
 import stringToArray from "../utils/stringToArray/stringToArray.js";
 import { generalError, unknownEndpoint } from "./middlewares/errors.js";
+import reviewsRouter from "./routes/reviewsRouter.js";
 
 const { corsAllowedDomains } = environment;
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.use("/users", usersRouter);
+app.use("/reviews", reviewsRouter);
 
 app.use(generalError);
 app.use(unknownEndpoint);
