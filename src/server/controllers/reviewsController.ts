@@ -9,7 +9,7 @@ export const getReviews = async (
   try {
     const reviewList = await Review.find();
 
-    res.status(200).json({ review: reviewList });
+    res.status(200).json({ reviewList });
   } catch (error: unknown) {
     next(error);
   }
