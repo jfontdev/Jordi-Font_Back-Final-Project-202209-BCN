@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import Review from "../../database/models/Review";
+import Review from "../../database/models/Review.js";
 
 export const getReviews = async (
   req: Request,
