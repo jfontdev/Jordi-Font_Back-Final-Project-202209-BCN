@@ -4,6 +4,7 @@ import databaseConnection from "../../database/databaseConnection";
 import Review from "../../database/models/Review";
 import app from "../app";
 import request from "supertest";
+import { reviewMock, reviewNotFoundMock } from "../../mocks/mockReview";
 
 let server: MongoMemoryServer;
 
@@ -48,6 +49,61 @@ describe("Given a GET /reviews endpoint", () => {
         .expect(expectedStatus);
 
       expect(response.body).toStrictEqual(expectedError);
+    });
+  });
+});
+
+describe("Given a DELETE /reviews/delete/:idReview", () => {
+  const review = reviewMock;
+
+  describe("When it receives a review with an ID '6388e62948fcd250640e377d'", () => {
+    test("Then it should return a status code 200 an delete the review with ID '6388e62948fcd250640e377d'", async () => {
+      const expectedStatus = 200;
+
+      await Review.create(review);
+
+      const response = await request(app)
+        .delete(`/reviews/delete/${review._id}`)
+        .expect(expectedStatus);
+
+      expect(response.status).toBe(expectedStatus);
+    });
+  });
+
+  describe("When it receives a review with an ID that doesn't exist", () => {
+    test("Then it should return a status code 404 and the error 'Review not found.'", async () => {
+      const expectedStatus = 404;
+
+      const expectedErrorMessage = "Review not found.";
+
+      const reviewNotFound = reviewNotFoundMock;
+
+      await Review.create(review);
+
+      const response = await request(app).delete(
+        `/reviews/delete/${reviewNotFound._id}`
+      );
+
+      expect(response.status).toBe(expectedStatus);
+      expect(response.body).toHaveProperty("error", expectedErrorMessage);
+    });
+  });
+
+  describe("When it receives a request with and an internal server error", () => {
+    test("Then it should return a '500' status code with error text 'Delete failed'", async () => {
+      const expectedStatus = 500;
+      const expectedErrorMessage = { error: "Delete failed" };
+
+      Review.findByIdAndDelete = jest
+        .fn()
+        .mockRejectedValue(expectedErrorMessage);
+
+      const response = await request(app)
+        .delete(`/reviews/delete/${review._id}`)
+        .expect(expectedStatus);
+
+      expect(response.status).toBe(expectedStatus);
+      expect(response.body).toStrictEqual(expectedErrorMessage);
     });
   });
 });
