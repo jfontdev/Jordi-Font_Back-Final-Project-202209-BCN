@@ -29,8 +29,13 @@ export const deleteReview = async (
     const deletedReview = await Review.findByIdAndDelete(idReview);
 
     if (!deletedReview) {
-      res.status(404).json("Review not found by that ID.");
+      const error = new CustomError(
+        "Review not found by that ID.",
+        404,
+        "Review not found."
+      );
       debug(chalk.red("The review doesn't exist"));
+      next(error);
       return;
     }
 
