@@ -69,8 +69,12 @@ describe("Given a deleteReview controller", () => {
   });
 
   describe("And the review doesn't exist", () => {
-    test("Then it should return a status code 404", async () => {
-      const expectedStatus = 404;
+    test("Then it should return a status code 404 and the custom error", async () => {
+      const expectedError = new CustomError(
+        "Review not found by that ID.",
+        404,
+        "Review not found."
+      );
 
       const req: Partial<Request> = {
         params: { idReview: "6388e62948fcd250640e377d" },
@@ -83,9 +87,9 @@ describe("Given a deleteReview controller", () => {
 
       Review.findByIdAndDelete = jest.fn().mockResolvedValue(null);
 
-      await deleteReview(req as Request, res as Response, null);
+      await deleteReview(req as Request, res as Response, next as NextFunction);
 
-      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 
