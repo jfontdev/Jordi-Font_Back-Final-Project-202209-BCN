@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import CustomError from "../../CustomError/CustomError";
 import Review from "../../database/models/Review";
-import { deleteReview, getReviews } from "./reviewsController";
+import { createReviewMock } from "../../mocks/mockReview";
+import { createReview, deleteReview, getReviews } from "./reviewsController";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -117,6 +118,45 @@ describe("Given a deleteReview controller", () => {
       await deleteReview(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(expectedError);
+    });
+  });
+});
+
+describe("Given a createReview controller", () => {
+  describe("When it receives a request with a review that looks exactly the same as ReviewStructure", () => {
+    test("Then it should respond with a status code 201", async () => {
+      const expectedStatus = 201;
+      const review = createReviewMock;
+
+      const req: Partial<Request> = {
+        body: review,
+      };
+
+      Review.create = jest.fn().mockResolvedValue(review);
+
+      await createReview(req as Request, res as Response, next as NextFunction);
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+    });
+  });
+
+  describe("When it receives a request that makes it throw an error", () => {
+    test("Then it should call the next function with an error", async () => {
+      const createReviewError = new CustomError(
+        "",
+        500,
+        "Create review failed"
+      );
+
+      const req: Partial<Request> = {
+        body: {},
+      };
+
+      Review.create = jest.fn().mockRejectedValue(createReviewError);
+
+      await createReview(req as Request, res as Response, next as NextFunction);
+
+      expect(next).toHaveBeenCalledWith(createReviewError);
     });
   });
 });
