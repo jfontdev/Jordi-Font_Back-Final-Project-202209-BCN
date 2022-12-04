@@ -4,7 +4,11 @@ import databaseConnection from "../../database/databaseConnection";
 import Review from "../../database/models/Review";
 import app from "../app";
 import request from "supertest";
-import { reviewMock, reviewNotFoundMock } from "../../mocks/mockReview";
+import {
+  createReviewMock,
+  reviewMock,
+  reviewNotFoundMock,
+} from "../../mocks/mockReview";
 
 let server: MongoMemoryServer;
 
@@ -104,6 +108,37 @@ describe("Given a DELETE /reviews/delete/:idReview", () => {
 
       expect(response.status).toBe(expectedStatus);
       expect(response.body).toStrictEqual(expectedErrorMessage);
+    });
+  });
+});
+
+describe("Given a POST /reviews/create endpoint", () => {
+  describe("When it receives a request with a valid review", () => {
+    test("Then it should respond with a status code 201 and a body with the review", async () => {
+      const expectedStatus = 201;
+      const reviewBody = createReviewMock;
+
+      const res = await request(app)
+        .post("/reviews/create")
+        .send(reviewBody)
+        .expect(expectedStatus);
+
+      expect(res.body).toHaveProperty("review");
+    });
+  });
+
+  describe("When it receives a bad request", () => {
+    test("Then it should throw an error with the message 'Create Review failed' and the status code 500", async () => {
+      const expectedStatus = 500;
+      const expectedError = { error: "Create review failed" };
+
+      Review.create = jest.fn().mockRejectedValue(expectedError);
+
+      const response = await request(app)
+        .post("/reviews/create")
+        .expect(expectedStatus);
+
+      expect(response.body).toStrictEqual(expectedError);
     });
   });
 });
