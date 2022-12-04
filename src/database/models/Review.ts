@@ -1,3 +1,4 @@
+import type { InferSchemaType } from "mongoose";
 import { model, Schema } from "mongoose";
 
 const reviewSchema = new Schema({
@@ -17,6 +18,8 @@ const reviewSchema = new Schema({
     type: String,
   },
 });
+
+export type ReviewStructure = InferSchemaType<typeof reviewSchema>;
 
 const Review = model("Review", reviewSchema, "reviews");
 
