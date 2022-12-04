@@ -2,6 +2,7 @@ import chalk from "chalk";
 import debug from "debug";
 import type { NextFunction, Request, Response } from "express";
 import CustomError from "../../CustomError/CustomError.js";
+import type { ReviewStructure } from "../../database/models/Review.js";
 import Review from "../../database/models/Review.js";
 
 export const getReviews = async (
@@ -48,5 +49,26 @@ export const deleteReview = async (
       "Delete failed"
     );
     next(customError);
+  }
+};
+
+export const createReview = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const receivedReview = req.body as ReviewStructure;
+
+  try {
+    const newReview = await Review.create(receivedReview);
+
+    res.status(201).json({ review: { newReview } });
+  } catch (error: unknown) {
+    const createError = new CustomError(
+      (error as Error).message,
+      500,
+      "Create review failed"
+    );
+    next(createError);
   }
 };
