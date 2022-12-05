@@ -11,6 +11,7 @@ import {
 } from "../../mocks/mockReview";
 
 let server: MongoMemoryServer;
+const review = reviewMock;
 
 beforeAll(async () => {
   server = await MongoMemoryServer.create();
@@ -58,8 +59,6 @@ describe("Given a GET /reviews endpoint", () => {
 });
 
 describe("Given a DELETE /reviews/delete/:idReview", () => {
-  const review = reviewMock;
-
   describe("When it receives a review with an ID '6388e62948fcd250640e377d'", () => {
     test("Then it should return a status code 200 an delete the review with ID '6388e62948fcd250640e377d'", async () => {
       const expectedStatus = 200;
@@ -138,6 +137,36 @@ describe("Given a POST /reviews/create endpoint", () => {
         .post("/reviews/create")
         .expect(expectedStatus);
 
+      expect(response.body).toStrictEqual(expectedError);
+    });
+  });
+});
+
+describe("Given a GET /reviews/detail/:idReview endpoint", () => {
+  describe("When it receives a request with a valid idReview", () => {
+    test("Then it should responde with a status code '200'", async () => {
+      const expectedStatus = 200;
+
+      const response = await request(app)
+        .get(`/reviews/detail/${review._id}`)
+        .expect(expectedStatus);
+
+      expect(response.status).toStrictEqual(expectedStatus);
+    });
+  });
+
+  describe("When it receives a bad request", () => {
+    test("Then it should throw an error with a status code '500' and the text 'There is no review.'", async () => {
+      const expectedStatus = 500;
+      const expectedError = { error: "There is no review." };
+
+      Review.findById = jest.fn().mockRejectedValue(expectedError);
+
+      const response = await request(app)
+        .get(`/reviews/detail/${review._id}`)
+        .expect(expectedStatus);
+
+      expect(response.status).toStrictEqual(expectedStatus);
       expect(response.body).toStrictEqual(expectedError);
     });
   });
