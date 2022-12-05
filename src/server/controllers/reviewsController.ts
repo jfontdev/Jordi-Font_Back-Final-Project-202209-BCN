@@ -72,3 +72,23 @@ export const createReview = async (
     next(createError);
   }
 };
+
+export const getReviewById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { idReview } = req.params;
+  try {
+    const review = await Review.findById(idReview);
+
+    res.status(200).json({ review });
+  } catch (error: unknown) {
+    const getReviewByIdError = new CustomError(
+      (error as Error).message,
+      500,
+      "There is no review."
+    );
+    next(getReviewByIdError);
+  }
+};

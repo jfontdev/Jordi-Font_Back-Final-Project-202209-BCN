@@ -1,8 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import CustomError from "../../CustomError/CustomError";
 import Review from "../../database/models/Review";
-import { createReviewMock } from "../../mocks/mockReview";
-import { createReview, deleteReview, getReviews } from "./reviewsController";
+import { createReviewMock, reviewMock } from "../../mocks/mockReview";
+import {
+  createReview,
+  deleteReview,
+  getReviewById,
+  getReviews,
+} from "./reviewsController";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -157,6 +162,44 @@ describe("Given a createReview controller", () => {
       await createReview(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(createReviewError);
+    });
+  });
+});
+
+describe("Given a getReviewById controller", () => {
+  describe("When it receives a request with a valid review id", () => {
+    test("Then it should call its method with status 200", async () => {
+      const expectedStatus = 200;
+      const idReview = reviewMock._id;
+
+      const req: Partial<Request> = {
+        params: { idReview },
+      };
+
+      Review.findById = jest.fn().mockReturnValue(idReview);
+
+      await getReviewById(req as Request, res as Response, null);
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+    });
+  });
+
+  describe("When it receives a request that makes it throw an error", () => {
+    test("Then it should call the next function with a CustomError", async () => {
+      const expectedError = new CustomError("", 500, "There is no review.");
+      const req: Partial<Request> = {
+        params: {},
+      };
+
+      Review.findById = jest.fn().mockRejectedValue(expectedError);
+
+      await getReviewById(
+        req as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 });
