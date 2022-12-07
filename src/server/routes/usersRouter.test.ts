@@ -130,12 +130,12 @@ describe("Given a POST /users/register endpoint", () => {
   });
 
   describe("When it receives a user that exists with the name 'usertest', password '654321' and email 'usertest@gmail.com", () => {
-    test("Then it should respond with a 409 status with error message 'User already exists'", async () => {
+    test("Then it should respond with a 409 status with error message 'El usuario ya existe'", async () => {
       await User.create(newUser);
 
       const expectedStatus = 409;
 
-      const expectedErrorMessage = "User already exists";
+      const expectedErrorMessage = "El usuario ya existe";
 
       const response = await request(app)
         .post("/users/register")

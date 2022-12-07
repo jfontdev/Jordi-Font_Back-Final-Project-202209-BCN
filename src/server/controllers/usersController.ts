@@ -76,7 +76,7 @@ export const usersRegister = async (
     const duplicatedRegister = new CustomError(
       (error as Error).message,
       409,
-      "User already exists"
+      "El usuario ya existe"
     );
     next(duplicatedRegister);
   }
