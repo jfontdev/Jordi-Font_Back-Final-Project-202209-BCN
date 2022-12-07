@@ -145,11 +145,11 @@ describe("Given a usersRegister controller", () => {
   });
 
   describe("When it receives a user that already exists", () => {
-    test("Then it shoudl call the next function, return a status code 409 and the error message 'User already exists'", async () => {
+    test("Then it shoudl call the next function, return a status code 409 and the error message 'El usuario ya existe'", async () => {
       const duplicatedRegister = new CustomError(
         "duplicate key",
         409,
-        "User already exists"
+        "El usuario ya existe"
       );
 
       User.create = jest.fn().mockRejectedValueOnce(duplicatedRegister);
